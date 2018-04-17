@@ -1,28 +1,29 @@
 <template>
   <div id="app">
-    <img src="./assets/logo.png">
-    <HelloWorld/>
+    <div class="monitor">
+      <Monitor></Monitor>
+    </div>
+
   </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld'
-
+import Monitor from './components/Ch-monitor'
 export default {
   name: 'App',
   components: {
-    HelloWorld
+    Monitor
   }
 }
 </script>
 
 <style>
-#app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
+  .monitor{
+    position:absolute;
+    left: 50%;
+    top: 50%;
+    width:455px;
+    height:455px;
+    transform: translate(-50%,-50%);
+  }
 </style>
