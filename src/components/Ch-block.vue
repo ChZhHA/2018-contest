@@ -1,5 +1,8 @@
 <template>
-    <div class="block-cover" :style="'width:'+widthOp+'px;height:'+heightOp+'px; background:'+bgColorOp+';color:'+fontColorOp+';line-height:'+heightOp+'px;top:'+top+'px;left:'+left+'px;'">
+    <div class="block-cover"
+         :style="'width:'+widthOp+'px;height:'+heightOp+'px; background:'+bgColorOp+';color:'+fontColorOp+';line-height:'+heightOp+'px;top:'+top+'px;left:'+left+'px;'"
+          v-if="display"
+    >
       <span v-show="number>0">{{number}}</span>
     </div>
 </template>
@@ -7,7 +10,7 @@
 <script>
     export default {
         name: 'Ch-block',
-        props: ["number","width","height","top","left"],
+        props: ["number","width","height","top","left","display"],
         components: {},
         data() {
             return {
