@@ -52,12 +52,16 @@
         ifTouch:false,
         touchStart:{x:-1,y:-1},
         touchSenor:40,
-        deaded:false
+        deaded:false,
+        wined:false,
+        eggtimer:null
       }
     },
     methods: {
       init() {   //初始化4x4的“棋盘”
         this.deaded=false;
+        this.wined=false;
+        this.backup=[];
         for (let i = 0; i < 4; i++) {
           this.chessMap[i] = [0, 0, 0, 0];
           this.mapping[i] = [null, null, null, null];
@@ -65,13 +69,13 @@
         this.blockList=[];
         //随机摆放两个点
         for (let i = 0; i < 2; i++) {
-          this.newBlock(false);
+          this.newBlock(false,2);
         }
         this.refreshMap();
       },
       Dead(){
         this.deaded=true;
-        bus.$emit('message','游戏结束','很遗憾，您的挑战失败了','noconfirm',9000,undefined,()=>{
+        bus.$emit('message','游戏结束','很遗憾，您的挑战失败了','noconfirm',null,undefined,()=>{
           this.init();
         });
       },
@@ -86,8 +90,8 @@
         for (const blockListElement of this.blockList) {
           if (blockListElement.display) {
             this.chessMap[blockListElement.i][blockListElement.j] = blockListElement.number;
-            if(blockListElement.number===2048){
-              bus.$emit('message','恭喜！','您成功达成了2048点！是否继续挑战？取消则进行新游戏',null,9000,null,()=>{this.init();})
+            if(blockListElement.number===2048&&!this.wined){
+              bus.$emit('message','恭喜！','您成功达成了2048点！是否继续挑战？取消则进行新游戏',null,null,()=>{this.wined=true},()=>{this.init();})
             }
             this.mapping[blockListElement.i][blockListElement.j] = i;  //建立映射关系
           }
@@ -107,11 +111,13 @@
           }
         }
       },
-      newBlock(f=true) {
+      newBlock(f=true,number) {
         const tempPos = this.randomPos();
-        let num=2;
+        let num;
         if(f){
           num=Math.floor(Math.random()*2)*2+2;
+        }else{
+          num=number;
         }
         this.blockList.push({i: tempPos.j, j: tempPos.i, number: num, id: this.total++, display: true});
         this.refreshMap();
@@ -345,17 +351,41 @@
         }
 
         this.touchStart={x:e.touches[0].clientX,y:e.touches[0].clientY};
-        if(e.touches.length>1&&!this.deaded&&this.touchStart.x>-1&&this.touchStart.y>-1){
-          this.touchStart={x:-1,y:-1};
-
-          if(this.backup.length>0){
-            bus.$emit('info','开始回溯!');
-            const backup=this.backup.pop();
-            this.chessMap=JSON.parse(backup.chessMap);
-            this.blockList=JSON.parse(backup.blockList);
-            this.mapping=JSON.parse(backup.mapping);
-            this.total=JSON.parse(backup.total);
+        if(e.touches.length===4&&!this.deaded&&this.touchStart.x>-1&&this.touchStart.y>-1){
+          if(this.eggtimer){
+            this.eggtimer=window.clearTimeout(this.eggtimer);
           }
+          this.touchStart={x:-1,y:-1};
+          bus.$emit('1024!');
+          this.newBlock(false,1024);
+        }
+        if(e.touches.length===3&&!this.deaded&&this.touchStart.x>-1&&this.touchStart.y>-1){
+          if(this.eggtimer){
+            this.eggtimer=window.clearTimeout(this.eggtimer);
+          }
+          this.eggtimer=window.setTimeout(()=> {
+            this.touchStart = {x: -1, y: -1};
+            bus.$emit('512!');
+            this.newBlock(false, 512);
+          },500);
+        }
+        if(e.touches.length===2&&!this.deaded&&this.touchStart.x>-1&&this.touchStart.y>-1){
+          if(this.eggtimer){
+            this.eggtimer=window.clearTimeout(this.eggtimer);
+          }
+          this.eggtimer=window.setTimeout(()=>{
+            this.touchStart={x:-1,y:-1};
+
+            if(this.backup.length>0){
+              bus.$emit('info','开始回溯!');
+              const backup=this.backup.pop();
+              this.chessMap=JSON.parse(backup.chessMap);
+              this.blockList=JSON.parse(backup.blockList);
+              this.mapping=JSON.parse(backup.mapping);
+              this.total=JSON.parse(backup.total);
+            }
+          },500);
+
         }
       },false);
       document.addEventListener('touchmove',e=>{
@@ -366,16 +396,41 @@
           }
         }
         const x = e.touches[0].clientX,y = e.touches[0].clientY;
-        if(e.touches.length>1&&!this.deaded&&this.touchStart.x>-1&&this.touchStart.y>-1){
-          this.touchStart={x:-1,y:-1};
-          bus.$emit('info','开始回溯!');
-          if(this.backup.length>0){
-            const backup=this.backup.pop();
-            this.chessMap=JSON.parse(backup.chessMap);
-            this.blockList=JSON.parse(backup.blockList);
-            this.mapping=JSON.parse(backup.mapping);
-            this.total=JSON.parse(backup.total);
+        if(e.touches.length===4&&!this.deaded&&this.touchStart.x>-1&&this.touchStart.y>-1){
+          if(this.eggtimer){
+            this.eggtimer=window.clearTimeout(this.eggtimer);
           }
+          this.touchStart={x:-1,y:-1};
+          bus.$emit('1024!');
+          this.newBlock(false,1024);
+        }
+        if(e.touches.length===3&&!this.deaded&&this.touchStart.x>-1&&this.touchStart.y>-1){
+          if(this.eggtimer){
+            this.eggtimer=window.clearTimeout(this.eggtimer);
+          }
+          this.eggtimer=window.setTimeout(()=> {
+            this.touchStart = {x: -1, y: -1};
+            bus.$emit('512!');
+            this.newBlock(false, 512);
+          },500);
+        }
+        if(e.touches.length===2&&!this.deaded&&this.touchStart.x>-1&&this.touchStart.y>-1){
+          if(this.eggtimer){
+            this.eggtimer=window.clearTimeout(this.eggtimer);
+          }
+          this.eggtimer=window.setTimeout(()=>{
+            this.touchStart={x:-1,y:-1};
+
+            if(this.backup.length>0){
+              bus.$emit('info','开始回溯!');
+              const backup=this.backup.pop();
+              this.chessMap=JSON.parse(backup.chessMap);
+              this.blockList=JSON.parse(backup.blockList);
+              this.mapping=JSON.parse(backup.mapping);
+              this.total=JSON.parse(backup.total);
+            }
+          },500);
+
         }
 
         if(this.touchStart.x>-1&&this.touchStart.y>-1&&!this.deaded&&e.touches.length===1){

@@ -1,5 +1,5 @@
 <template>
-<div class="container" v-show="condis" @click="close" @touch="close">
+<div class="container" v-show="condis" >
   <transition name="meswin">
     <div class="Meswindow" v-show="windis">
       <div class="title">{{title}}</div>
@@ -74,7 +74,7 @@
               }
             }
 
-          },false)
+          },false);
           bus.$on('message',(title,text,type='default',during=undefined,callback=undefined,callback2=undefined)=>{
             // alert(1)
             this.title=title;

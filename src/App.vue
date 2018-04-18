@@ -47,12 +47,12 @@ export default {
         this.blockWidth=95;
         this.blockHeight=95;
         this.blockSpace=15;
-        this.fontSize=40;
+        this.fontSize=38;
       }else{
         this.blockWidth=clientWidth*0.19;
         this.blockHeight=clientWidth*0.19;
         this.blockSpace=clientWidth*0.03;
-        this.fontSize=clientWidth*0.09;
+        this.fontSize=clientWidth*0.087;
       }
     }
   },
