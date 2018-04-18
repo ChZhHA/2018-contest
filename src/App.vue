@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <div class="hint">秘籍：电脑Backspace 手机双指点击</div>
+    <div class="hint">回溯：电脑Backspace 或 双指点击</div>
     <div class="monitor">
       <Monitor :blockWidth="blockWidth"
                :blockHeight="blockHeight"
@@ -24,6 +24,7 @@
 import Monitor from '@/components/CHMonitor'
 import Info from '@/components/WSInfo'
 import Message from '@/components/WSMessage'
+import bus from './assets/EventBus'
 export default {
   name: 'App',
   components: {

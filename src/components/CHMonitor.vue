@@ -51,7 +51,7 @@
         backup:[],
         ifTouch:false,
         touchStart:{x:-1,y:-1},
-        touchSenor:120,
+        touchSenor:90,
         deaded:false
       }
     },
@@ -343,8 +343,13 @@
             event.preventDefault();
           }
         }
-        if(e.changedTouches.length>1&&!this.deaded){
+
+        this.touchStart={x:e.touches[0].clientX,y:e.touches[0].clientY};
+        if(e.touches.length>1&&!this.deaded&&this.touchStart.x>-1&&this.touchStart.y>-1){
+          this.touchStart={x:-1,y:-1};
+
           if(this.backup.length>0){
+            bus.$emit('info','开始回溯!');
             const backup=this.backup.pop();
             this.chessMap=JSON.parse(backup.chessMap);
             this.blockList=JSON.parse(backup.blockList);
@@ -352,7 +357,6 @@
             this.total=JSON.parse(backup.total);
           }
         }
-        this.touchStart={x:e.changedTouches[0].clientX,y:e.changedTouches[0].clientY}
       },false);
       document.addEventListener('touchmove',e=>{
         if (event.cancelable) {
@@ -361,22 +365,39 @@
             event.preventDefault();
           }
         }
-        const x = e.changedTouches[0].clientX,y = e.changedTouches[0].clientY;
-        if(this.touchStart.x>-1&&this.touchStart.y>-1&&!this.deaded){
-          if((x-this.touchStart.x)^2+(y-this.touchStart.y)^2>this.touchSenor^2){
+        const x = e.touches[0].clientX,y = e.touches[0].clientY;
+        if(e.touches.length>1&&!this.deaded&&this.touchStart.x>-1&&this.touchStart.y>-1){
+          this.touchStart={x:-1,y:-1};
+          bus.$emit('info','开始回溯!');
+          if(this.backup.length>0){
+            const backup=this.backup.pop();
+            this.chessMap=JSON.parse(backup.chessMap);
+            this.blockList=JSON.parse(backup.blockList);
+            this.mapping=JSON.parse(backup.mapping);
+            this.total=JSON.parse(backup.total);
+          }
+        }
+
+        if(this.touchStart.x>-1&&this.touchStart.y>-1&&!this.deaded&&e.touches.length===1){
+          if(Math.sqrt(Math.pow(x-this.touchStart.x,2)+Math.pow(y-this.touchStart.y,2))>this.touchSenor){
             let flag=false;
             const deX=x-this.touchStart.x,
               deY=y-this.touchStart.y;
             if(Math.abs(deX)>Math.abs(deY)){
               if(deX>0){
+                this.doBackup();
                 flag=this.rightOp();
+
               }else{
+                this.doBackup();
                 flag=this.leftOp();
               }
             }else{
               if(deY>0){
+                this.doBackup();
                 flag=this.downOp();
               }else{
+                this.doBackup();
                 flag=this.upOp();
               }
             }
