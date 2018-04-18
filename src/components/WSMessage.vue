@@ -1,13 +1,12 @@
 <template>
-<div class="container" v-show="condis" @click="close">
+<div class="container" v-show="condis" @click="close" @touch="close">
   <transition name="meswin">
     <div class="Meswindow" v-show="windis">
       <div class="title">{{title}}</div>
       <div class="text">{{text}}</div>
       <div class="buttongroup">
-        <button @click="confirm" v-show="type!=='noconfirm'">确定</button>
-        <button @click="cancel" v-show="type!=='noconfirm'">{{ifduring}}取消</button>
-        <button @click="cancel" v-show="type==='noconfirm'">{{ifduring}}再玩一局</button>
+        <button name="confirm"  @click="confirm"  v-show="type!=='noconfirm'">确定</button>
+        <button name="cancel" @click="cancel" >{{ifduring}}再玩一局</button>
       </div>
     </div>
   </transition>
@@ -62,6 +61,20 @@
 
         },
         mounted() {
+
+          document.addEventListener('touchend',e=>{
+            if(e.path[0].name) {
+              switch (e.path[0].name) {
+                case 'cancel':
+                  this.cancel();
+                  break;
+                case 'confirm':
+                  this.confirm();
+                  break;
+              }
+            }
+
+          },false)
           bus.$on('message',(title,text,type='default',during=undefined,callback=undefined,callback2=undefined)=>{
             // alert(1)
             this.title=title;

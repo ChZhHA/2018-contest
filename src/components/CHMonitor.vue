@@ -71,7 +71,7 @@
       },
       Dead(){
         this.deaded=true;
-        bus.$emit('message','游戏结束','很遗憾，您的挑战失败了','noconfirm',null,undefined,()=>{
+        bus.$emit('message','游戏结束','很遗憾，您的挑战失败了','noconfirm',9000,undefined,()=>{
           this.init();
         });
       },
@@ -87,7 +87,7 @@
           if (blockListElement.display) {
             this.chessMap[blockListElement.i][blockListElement.j] = blockListElement.number;
             if(blockListElement.number===2048){
-              bus.$emit('message','恭喜！','您成功达成了2048点！是否继续挑战？取消则进行新游戏',null,null,null,()=>{this.init();})
+              bus.$emit('message','恭喜！','您成功达成了2048点！是否继续挑战？取消则进行新游戏',null,9000,null,()=>{this.init();})
             }
             this.mapping[blockListElement.i][blockListElement.j] = i;  //建立映射关系
           }
