@@ -64,7 +64,7 @@ export default {
       left:5%;
       top: 20%;
       width:90%;
-      padding-bottom:90%;
+      /*padding-bottom:90%;*/
     }
   }
   @media (min-width: 530px){

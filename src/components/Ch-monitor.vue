@@ -48,7 +48,10 @@
           fontSize:40
         },
         total: 0,
-        backup:[]
+        backup:[],
+        ifTouch:false,
+        touchStart:{x:-1,y:-1},
+        touchSenor:120
       }
     },
     methods: {
@@ -314,30 +317,55 @@
           }
         }
       };
-      document.ontouchstart=e=>{
+      document.addEventListener('touchstart',e=>{
         if (event.cancelable) {
           // 判断默认行为是否已经被禁用
           if (!event.defaultPrevented) {
             event.preventDefault();
           }
         }
-      };
-      document.ontouchmove=e=>{
+        this.touchStart={x:e.changedTouches[0].clientX,y:e.changedTouches[0].clientY}
+      },false);
+      document.addEventListener('touchmove',e=>{
         if (event.cancelable) {
           // 判断默认行为是否已经被禁用
           if (!event.defaultPrevented) {
             event.preventDefault();
           }
         }
-      };
-      document.ontouchend=e=>{
-        if (event.cancelable) {
-          // 判断默认行为是否已经被禁用
-          if (!event.defaultPrevented) {
-            event.preventDefault();
+        const x = e.changedTouches[0].clientX,y = e.changedTouches[0].clientY;
+        if(this.touchStart.x>-1&&this.touchStart.y>-1){
+          if((x-this.touchStart.x)^2+(y-this.touchStart.y)^2>this.touchSenor^2){
+            let flag=false;
+            const deX=x-this.touchStart.x,
+              deY=y-this.touchStart.y;
+            if(Math.abs(deX)>Math.abs(deY)){
+              if(deX>0){
+                flag=this.rightOp();
+              }else{
+                flag=this.leftOp();
+              }
+            }else{
+              if(deY>0){
+                flag=this.downOp();
+              }else{
+                flag=this.upOp();
+              }
+            }
+            this.touchStart={x:-1,y:-1};
+            if (flag) {
+              this.newBlock();
+
+            } else {
+              if (this.ifDead()) {
+                //游戏结束
+
+              }
+            }
           }
         }
-      }
+      },false);
+
     },
     computed: {
       blockWidthOp(){
