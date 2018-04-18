@@ -1,6 +1,6 @@
 <template>
     <div class="block-cover"
-         :style="'width:'+widthOp+'px;height:'+heightOp+'px; background:'+bgColorOp+';color:'+fontColorOp+';line-height:'+heightOp+'px;top:'+top+'px;left:'+left+'px;'"
+         :style="'width:'+widthOp+'px;height:'+heightOp+'px; background:'+bgColorOp+';color:'+fontColorOp+';line-height:'+heightOp+'px;top:'+top+'px;left:'+left+'px;font-size:'+fontSizeOp+'px;'"
           v-if="display"
     >
       <span v-show="number>0">{{number}}</span>
@@ -10,13 +10,14 @@
 <script>
     export default {
         name: 'Ch-block',
-        props: ["number","width","height","top","left","display"],
+        props: ["number","width","height","top","left","display","fontSize"],
         components: {},
         data() {
             return {
               defaults:{
                 width:40,
-                height:40
+                height:40,
+                fontSize:40
               }
             }
         },
@@ -70,6 +71,9 @@
           },
           heightOp(){
             return this.height||this.defaults.height;
+          },
+          fontSizeOp(){
+            return this.fontSize||this.defaults.fontSize;
           }
         }
     }
@@ -83,7 +87,6 @@
     margin:0;
     text-align: center;
     font-weight:800;
-    font-size:40px;
     font-family: "Comic Sans MS","Arial";
     transition: all 0.5s ease;
   }

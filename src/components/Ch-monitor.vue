@@ -3,10 +3,10 @@
     <div v-for="(item,i) of chessMap">
       <Block v-for="(block,j) of item"
              number=0
-             :width="blockWidth"
-             :height="blockHeight"
-             :top="i*(blockHeight+blockSpace)+blockSpace"
-             :left="j*(blockWidth+blockSpace)+blockSpace"
+             :width="blockWidthOp"
+             :height="blockHeightOp"
+             :top="i*(blockHeightOp+blockSpaceOp)+blockSpaceOp"
+             :left="j*(blockWidthOp+blockSpaceOp)+blockSpaceOp"
              :key="j"
              display="true"
       ></Block>
@@ -14,12 +14,13 @@
     <transition-group name="zoom_fade">
       <Block v-for="(item,i) of blockList"
              :number="item.number"
-             :width="blockWidth"
-             :height="blockHeight"
-             :top="item.i*(blockHeight+blockSpace)+blockSpace"
-             :left="item.j*(blockWidth+blockSpace)+blockSpace"
+             :width="blockWidthOp"
+             :height="blockHeightOp"
+             :top="item.i*(blockHeightOp+blockSpaceOp)+blockSpaceOp"
+             :left="item.j*(blockWidthOp+blockSpaceOp)+blockSpaceOp"
              :key="item.id"
              :display="item.display"
+             :fontSize="fontSizeOp"
              v-if="item.display"
       ></Block>
     </transition-group>
@@ -31,7 +32,7 @@
 
   export default {
     name: 'Ch-monitor',
-    props: [],
+    props: ["blockWidth","blockHeight","blockSpace","fontSize"],
     components: {
       Block
     },
@@ -40,9 +41,12 @@
         chessMap: [],
         blockList: [],
         mapping: [],
-        blockWidth: 95,
-        blockHeight: 95,
-        blockSpace: 15,
+        defaults:{
+          blockWidth: 95,
+          blockHeight: 95,
+          blockSpace: 15,
+          fontSize:40
+        },
         total: 0,
         backup:[]
       }
@@ -106,16 +110,16 @@
           //棋盘无空且操作无效，检测是否还可以继续游戏
           const tempMap = JSON.parse(JSON.stringify(this.chessMap));
           const tempList = JSON.parse(JSON.stringify(this.blockList));
-          if (!upOp) {
+          if (!this.upOp) {
             this.chessMap = JSON.parse(JSON.stringify(tempMap));
             this.tempList = JSON.parse(JSON.stringify(tempList));
-            if (!downOp) {
+            if (!this.downOp) {
               this.chessMap = JSON.parse(JSON.stringify(tempMap));
               this.tempList = JSON.parse(JSON.stringify(tempList));
-              if (!leftOp) {
+              if (!this.leftOp) {
                 this.chessMap = JSON.parse(JSON.stringify(tempMap));
                 this.tempList = JSON.parse(JSON.stringify(tempList));
-                if (!rightOp) {
+                if (!this.rightOp) {
                   this.chessMap = JSON.parse(JSON.stringify(tempMap));
                   this.tempList = JSON.parse(JSON.stringify(tempList));
                 } else {
@@ -270,7 +274,7 @@
       this.init();
     },
     mounted() {
-      document.onkeydown = (e) => {
+      document.onkeydown = e => {
         let flag = false;
         switch (e.key) {
           case 'Backspace':
@@ -309,9 +313,46 @@
 
           }
         }
+      };
+      document.ontouchstart=e=>{
+        if (event.cancelable) {
+          // 判断默认行为是否已经被禁用
+          if (!event.defaultPrevented) {
+            event.preventDefault();
+          }
+        }
+      };
+      document.ontouchmove=e=>{
+        if (event.cancelable) {
+          // 判断默认行为是否已经被禁用
+          if (!event.defaultPrevented) {
+            event.preventDefault();
+          }
+        }
+      };
+      document.ontouchend=e=>{
+        if (event.cancelable) {
+          // 判断默认行为是否已经被禁用
+          if (!event.defaultPrevented) {
+            event.preventDefault();
+          }
+        }
       }
     },
-    computed: {}
+    computed: {
+      blockWidthOp(){
+        return this.blockWidth||this.defaults.blockWidth;
+      },
+      blockHeightOp(){
+        return this.blockHeight||this.defaults.blockHeight;
+      },
+      blockSpaceOp(){
+        return this.blockSpace||this.defaults.blockSpace;
+      },
+      fontSizeOp(){
+        return this.fontSize||this.defaults.fontSize;
+      }
+    }
   }
 </script>
 
@@ -319,7 +360,8 @@
 <style scoped>
   .container {
     width: 100%;
-    height: 100%;
+    /*height: 100%;*/
+    padding-bottom: 100%;
     border-radius: 10px;
     background: #cfc0b4;
   }
