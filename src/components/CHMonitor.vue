@@ -51,7 +51,7 @@
         backup:[],
         ifTouch:false,
         touchStart:{x:-1,y:-1},
-        touchSenor:90,
+        touchSenor:40,
         deaded:false
       }
     },
