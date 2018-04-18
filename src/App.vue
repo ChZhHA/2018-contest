@@ -1,6 +1,7 @@
 <template>
   <div id="app">
     <div class="hint">回溯：电脑Backspace 或 双指点击</div>
+    <div class="scoll" :style="'font-size:'+(fontSize*0.75)+'px;'">分数{{scoll}}</div>
     <div class="monitor">
       <Monitor :blockWidth="blockWidth"
                :blockHeight="blockHeight"
@@ -34,6 +35,7 @@ export default {
   },
   data(){
     return{
+      scoll:0,
       blockWidth:95,
       blockHeight:95,
       blockSpace:15,
@@ -63,7 +65,10 @@ export default {
     window.onload=()=>{
       this.init();
       bus.$emit('info','欢迎来到陈宗豪的2048');
-    }
+    };
+    bus.$on('scoll',(s)=>{
+      this.scoll=s;
+    })
   }
 }
 </script>
@@ -73,6 +78,14 @@ export default {
     position:absolute;
     left: 50%;
     top: 50%;
+  }
+  .scoll{
+    position:absolute;
+    text-align: center;
+    top:50px;
+    left:50%;
+    transform: translateX(-50%);
+    color:black;
   }
   .hint{
     position: absolute;

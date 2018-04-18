@@ -54,11 +54,13 @@
         touchSenor:40,
         deaded:false,
         wined:false,
-        eggtimer:null
+        eggtimer:null,
+        scoll:0,
       }
     },
     methods: {
       init() {   //初始化4x4的“棋盘”
+        this.scoll=0;
         this.deaded=false;
         this.wined=false;
         this.total=0;
@@ -109,6 +111,14 @@
           j = Math.floor(Math.random() * 4);
           if (this.chessMap[j][i] === 0) {
             return {i, j};
+          }
+        }
+      },
+      addScoll(){
+        for (let i = 0; i < 4; i++) {
+          for (let j = 0; j <4; j++) {
+            this.scoll+=Math.ceil(Math.sqrt(this.total)*this.chessMap[i][j]/100);
+            bus.$emit('scoll',this.scoll);
           }
         }
       },
@@ -351,6 +361,7 @@
         }
 
         if (flag) {
+          this.addScoll();
           this.newBlock();
 
         } else {
@@ -469,6 +480,7 @@
             }
             this.touchStart={x:-1,y:-1};
             if (flag) {
+              this.addScoll();
               this.newBlock();
 
             } else {
