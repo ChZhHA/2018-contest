@@ -293,6 +293,17 @@
           mapping:JSON.stringify(this.mapping),
           total:JSON.stringify(this.total)
         });
+      },
+      goBack(){
+
+        if(this.backup.length>0){
+          bus.$emit('info','开始回溯!',1000);
+          const backup=this.backup.pop();
+          this.chessMap=JSON.parse(backup.chessMap);
+          this.blockList=JSON.parse(backup.blockList);
+          this.mapping=JSON.parse(backup.mapping);
+          this.total=JSON.parse(backup.total);
+        }
       }
     },
     created() {
@@ -306,13 +317,7 @@
         if(this.deaded) return ;
         switch (e.key) {
           case 'Backspace':
-            if(this.backup.length>0){
-              const backup=this.backup.pop();
-              this.chessMap=JSON.parse(backup.chessMap);
-              this.blockList=JSON.parse(backup.blockList);
-              this.mapping=JSON.parse(backup.mapping);
-              this.total=JSON.parse(backup.total);
-            }
+            this.goBack();
             break;
           case 'ArrowUp':
             this.doBackup();
@@ -376,14 +381,7 @@
           this.eggtimer=window.setTimeout(()=>{
             this.touchStart={x:-1,y:-1};
 
-            if(this.backup.length>0){
-              bus.$emit('info','开始回溯!');
-              const backup=this.backup.pop();
-              this.chessMap=JSON.parse(backup.chessMap);
-              this.blockList=JSON.parse(backup.blockList);
-              this.mapping=JSON.parse(backup.mapping);
-              this.total=JSON.parse(backup.total);
-            }
+            this.goBack();
           },500);
 
         }
