@@ -61,6 +61,7 @@
       init() {   //初始化4x4的“棋盘”
         this.deaded=false;
         this.wined=false;
+        this.total=0;
         this.backup=[];
         for (let i = 0; i < 4; i++) {
           this.chessMap[i] = [0, 0, 0, 0];
@@ -115,7 +116,19 @@
         const tempPos = this.randomPos();
         let num;
         if(f){
-          num=Math.floor(Math.random()*2)*2+2;
+          let k=1;
+          if(this.total>250){
+            k=6;
+          }else if(this.total>150){
+            k=5;
+          }else if(this.total>90){
+            k=4;
+          }else if(this.total>40){
+            k=3;
+          }else if(this.total>10){
+            k=2;
+          }
+          num=Math.pow(2,Math.ceil(Math.random()*k));
         }else{
           num=number;
         }
