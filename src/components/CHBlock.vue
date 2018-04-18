@@ -9,7 +9,7 @@
 
 <script>
     export default {
-        name: 'Ch-block',
+        name: 'CHBlock',
         props: ["number","width","height","top","left","display","fontSize"],
         components: {},
         data() {

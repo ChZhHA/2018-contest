@@ -28,10 +28,10 @@
 </template>
 
 <script>
-  import Block from './Ch-block';
-
+  import Block from './CHBlock';
+  import bus from '../assets/EventBus'
   export default {
-    name: 'Ch-monitor',
+    name: 'CHMonitor',
     props: ["blockWidth","blockHeight","blockSpace","fontSize"],
     components: {
       Block
@@ -51,20 +51,29 @@
         backup:[],
         ifTouch:false,
         touchStart:{x:-1,y:-1},
-        touchSenor:120
+        touchSenor:120,
+        deaded:false
       }
     },
     methods: {
       init() {   //初始化4x4的“棋盘”
+        this.deaded=false;
         for (let i = 0; i < 4; i++) {
           this.chessMap[i] = [0, 0, 0, 0];
           this.mapping[i] = [null, null, null, null];
         }
+        this.blockList=[];
         //随机摆放两个点
         for (let i = 0; i < 2; i++) {
-          this.newBlock();
+          this.newBlock(false);
         }
         this.refreshMap();
+      },
+      Dead(){
+        this.deaded=true;
+        bus.$emit('message','游戏结束','很遗憾，您的挑战失败了','noconfirm',null,undefined,()=>{
+          this.init();
+        });
       },
       refreshMap() {
         for (let i = 0; i < 4; i++) {
@@ -77,6 +86,9 @@
         for (const blockListElement of this.blockList) {
           if (blockListElement.display) {
             this.chessMap[blockListElement.i][blockListElement.j] = blockListElement.number;
+            if(blockListElement.number===2048){
+              bus.$emit('message','恭喜！','您成功达成了2048点！是否继续挑战？取消则进行新游戏',null,null,null,()=>{this.init();})
+            }
             this.mapping[blockListElement.i][blockListElement.j] = i;  //建立映射关系
           }
           i++;
@@ -95,9 +107,13 @@
           }
         }
       },
-      newBlock() {
+      newBlock(f=true) {
         const tempPos = this.randomPos();
-        this.blockList.push({i: tempPos.j, j: tempPos.i, number: 2, id: this.total++, display: true});
+        let num=2;
+        if(f){
+          num=Math.floor(Math.random()*2)*2+2;
+        }
+        this.blockList.push({i: tempPos.j, j: tempPos.i, number: num, id: this.total++, display: true});
         this.refreshMap();
       },
       ifDead() {
@@ -275,10 +291,13 @@
     },
     created() {
       this.init();
+
     },
     mounted() {
+
       document.onkeydown = e => {
         let flag = false;
+        if(this.deaded) return ;
         switch (e.key) {
           case 'Backspace':
             if(this.backup.length>0){
@@ -313,7 +332,7 @@
         } else {
           if (this.ifDead()) {
             //游戏结束
-
+            this.Dead();
           }
         }
       };
@@ -322,6 +341,15 @@
           // 判断默认行为是否已经被禁用
           if (!event.defaultPrevented) {
             event.preventDefault();
+          }
+        }
+        if(e.changedTouches.length>1&&!this.deaded){
+          if(this.backup.length>0){
+            const backup=this.backup.pop();
+            this.chessMap=JSON.parse(backup.chessMap);
+            this.blockList=JSON.parse(backup.blockList);
+            this.mapping=JSON.parse(backup.mapping);
+            this.total=JSON.parse(backup.total);
           }
         }
         this.touchStart={x:e.changedTouches[0].clientX,y:e.changedTouches[0].clientY}
@@ -334,7 +362,7 @@
           }
         }
         const x = e.changedTouches[0].clientX,y = e.changedTouches[0].clientY;
-        if(this.touchStart.x>-1&&this.touchStart.y>-1){
+        if(this.touchStart.x>-1&&this.touchStart.y>-1&&!this.deaded){
           if((x-this.touchStart.x)^2+(y-this.touchStart.y)^2>this.touchSenor^2){
             let flag=false;
             const deX=x-this.touchStart.x,
@@ -359,12 +387,14 @@
             } else {
               if (this.ifDead()) {
                 //游戏结束
-
+                  this.Dead();
               }
             }
           }
         }
       },false);
+
+
 
     },
     computed: {
